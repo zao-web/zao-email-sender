@@ -1,6 +1,6 @@
 
 	<div class="pre-header" style="background-color: #eee;color: #eee;font-size: 5px;">
-		Welcome to the beginning of good things!
+		Welcome to the beginning of good things! We&#39;re so glad to be working with you and we&#39;re excited to get this project kicked into high gear.
 	</div>
 	<div class="email-background" style="background-color: #eee;padding: 15px;font-family: 'Helvetica Neue', Helvetica, sans-serif;">
 		<div class="email-container" style="max-width: 720px;background-color: #fff;margin: 0 auto;border-radius: 5px;padding: 10px;">
