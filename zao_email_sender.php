@@ -39,12 +39,10 @@ function zao_send_email( $template, $receiver, $subject, $extra = '' ) {
 		return false;
 	}
 
-	if( isset( $_POST['zes-email'] ) ) {
-		$receiver = $_POST['zes-email'];
-	} else {
+	if( ! isset( $receiver ) ) {
 		return;
 	}
-
+	
 	ob_start();
 
 	include $template_file;
@@ -53,31 +51,27 @@ function zao_send_email( $template, $receiver, $subject, $extra = '' ) {
 
 	$text = zao_merge_email_tags( $text, $receiver );
 
-	return wp_mail( $receiver, $subject, $text );
-
+	$mail = wp_mail( $receiver, $subject, $text );
+	
+	wp_redirect( admin_url( 'admin.php?page=zao_email_sender' ) );
+	exit;
 }
 
 //Send the Appropriate email
 function zao_create_email() {
 
 	if( isset( $_POST['zes-template'] ) && $_POST['zes-template'] === 'welcome' ) {
-
-		$mail = zao_send_email( 'welcome-letter', $receiver, 'Project Start with Zao' );
-
+		zao_send_email( 'welcome-letter', $_POST['zes-email'], 'Project Start with Zao' );
 	} elseif ( isset( $_POST['zes-template'] ) && $_POST['zes-template'] === 'case-study' ) {
-
-		$mail = zao_send_email( 'case-study', $receiver, 'Congrats on your successful project!' );
-
+		zao_send_email( 'case-study', $_POST['zes-email'], 'Congrats on your successful project!' );
 	} elseif ( isset( $_POST['zes-template'] ) && $_POST['zes-template'] === 'case-study-followup' ) {
-
-		$mail = zao_send_email( 'case-study-followup', $receiver, 'A friendly reminder' );
-	
+		zao_send_email( 'case-study-followup', $_POST['zes-email'], 'A friendly reminder' );
 	} elseif ( isset( $_POST['zes-template'] ) && $_POST['zes-template'] === 'client-survey' ) {
-
-		$mail = zao_send_email( 'client-survey', $receiver, 'Thank you for working with us!' );
+		zao_send_email( 'client-survey', $_POST['zes-email'], 'Thank you for working with us!' );
 	}
-
 }
+add_action( 'admin_init', 'zao_create_email' );
+
 
 /**
  * [gb_merge_email_tags description]
