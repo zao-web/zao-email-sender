@@ -70,11 +70,11 @@ function zao_create_email() {
 
 	} elseif ( isset( $_POST['zes-template'] ) && $_POST['zes-template'] === 'case-study-followup' ) {
 
-		$mail = zao_send_email( 'case-study', $receiver, 'A friendly reminder' );
+		$mail = zao_send_email( 'case-study-followup', $receiver, 'A friendly reminder' );
 	
 	} elseif ( isset( $_POST['zes-template'] ) && $_POST['zes-template'] === 'client-survey' ) {
 
-		$mail = zao_send_email( 'case-study', $receiver, 'Thank you for working with us!' );
+		$mail = zao_send_email( 'thank-you-survey', $receiver, 'Thank you for working with us!' );
 	}
 
 }
@@ -87,11 +87,10 @@ function zao_create_email() {
  * @return [type]       [description]
  */
 function zao_merge_email_tags( $text, $user ) {
-	$url_query = http_build_query('http://zao.is/case-study-questionnaire/?email=' . $_POST[ 'zes-email' ] );
 
 	$args = array(
 		'{first_name}'	=> $_POST[ 'zes-name' ],
-		'{url_query}'	=> $url_query
+		'{url_query}'	=> esc_url( add_query_arg( 'email', $_POST[ 'zes-email' ], 'http://zao.is/case-study-questionnaire/' ) )
 	);
 	return str_replace( array_keys( $args ), $args, $text );
 }
@@ -112,7 +111,7 @@ function zao_email_sender_options() {
 	<div class="wrap">
 		<h1>Zao Email Sender</h1>
 		<p>Easily send boilerplate HTML emails to clients.</p>
-		<form id="zes-sender" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+		<form id="zes-sender" method="post" action="">
 			<label for="zes-email">Receiver&rsquo;s Email</label><br>
 			<input id="zes-email" name="zes-email" type="email"/><br> 
 			<label for="zes-template">Select the Email Template</label><br>
