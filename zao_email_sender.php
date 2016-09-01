@@ -33,6 +33,18 @@ function zao_send_email( $template, $receiver, $subject, $extra = '' ) {
 		return 'text/html';
 	} );
 
+	add_filter( 'wp_mail_from', 'zao_mail_from' );
+	function zao_mail_from( $email )
+	{
+	    return "office@zao.is";
+	}
+
+	add_filter( 'wp_mail_from_name', 'zao_mail_from_name' );
+	function zao_mail_from_name( $name )
+	{
+	    return "Zao Office";
+	}
+
 	$template_file = plugin_dir_path( __FILE__ )  . 'emails/' . $template . '.php';
 	
 	if ( ! file_exists( $template_file ) ) {
@@ -83,8 +95,9 @@ add_action( 'admin_init', 'zao_create_email' );
 function zao_merge_email_tags( $text, $user ) {
 
 	$args = array(
-		'{first_name}'	=> $_POST[ 'zes-name' ],
-		'{url_query}'	=> esc_url( add_query_arg( 'email', $_POST[ 'zes-email' ], 'http://zao.is/case-study-questionnaire/' ) )
+		'{first_name}'			=> $_POST[ 'zes-name' ],
+		'{url-case-study}'		=> esc_url( add_query_arg( 'email', $_POST[ 'zes-email' ], 'http://zao.is/case-study-questionnaire/' ) ),
+		'{url-client-survey}' 	=> esc_url( add_query_arg( 'email', $_POST[ 'zes-email' ], 'http://zao.is/improving/' ) )
 	);
 	return str_replace( array_keys( $args ), $args, $text );
 }
