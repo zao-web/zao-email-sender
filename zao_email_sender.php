@@ -74,7 +74,7 @@ function zao_create_email() {
 	
 	} elseif ( isset( $_POST['zes-template'] ) && $_POST['zes-template'] === 'client-survey' ) {
 
-		$mail = zao_send_email( 'thank-you-survey', $receiver, 'Thank you for working with us!' );
+		$mail = zao_send_email( 'client-survey', $receiver, 'Thank you for working with us!' );
 	}
 
 }
