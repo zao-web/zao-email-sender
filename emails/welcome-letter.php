@@ -12,7 +12,7 @@
 			</div>
 			<p style="margin: 20px;font-size: 18px;font-weight: 300px;color: #4a545a;line-height: 1.5;">Hello {first_name}!</p>
 
-			<p style="margin: 20px;font-size: 18px;font-weight: 300px;color: #4a545a;line-height: 1.5;">We&#39;re so glad to be working with you and we&#39;re excited to get this project kicked into high gear.  You will or already have received a couple invitations for Slack and Breeze in your email.  These are private and confidential tools we use to keep our projects on time, clear, and fully communicated.</p>
+			<p style="margin: 20px;font-size: 18px;font-weight: 300px;color: #4a545a;line-height: 1.5;">We&#39;re so glad to be working with you and we&#39;re excited to get this project kicked into high gear.  {custom_message}  You will or already have received a couple invitations for Slack and Breeze in your email.  These are private and confidential tools we use to keep our projects on time, clear, and fully communicated.</p>
 
 			<p style="margin: 20px;font-size: 18px;font-weight: 300px;color: #4a545a;line-height: 1.5;"><strong>Slack</strong> is a messaging app where we can talk, share files and work together. Having everything in one place will help us work together better and faster, rather than jumping around between emails, IMs, texts and a bunch of other programs. Everything you share in Slack is automatically indexed and archived, creating a searchable archive of all of our work. We want to be using the best communication tools to help us be more productive and make our lives easier. <a href="https://get.slack.help/hc/en-us/articles/218080037-Getting-started-for-new-users" style="color: #4e8dca;text-decoration: none;">Here is a resource provided by Slack</a> if you want more information on how to use it.</p> 
 

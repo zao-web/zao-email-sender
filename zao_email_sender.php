@@ -9,14 +9,14 @@
  */
 
 //Enqueue script
-add_action( 'admin_enqueue_scripts', 'zao_email_sender_enqueue' );
-
 function zao_email_sender_enqueue() {   
     wp_enqueue_script( 'zao_js',
         plugins_url( '/js/zao_email_sender.js', __FILE__ ),
         array( 'jquery' )
     );
+    wp_enqueue_style( 'zes_style', plugins_url( '/css/zes_style.css',  __FILE__ ) );
 }
+add_action( 'admin_enqueue_scripts', 'zao_email_sender_enqueue' );
 
 /**
  * Sends email, based on template, with placeholders replaced with dynamic data.
@@ -93,11 +93,13 @@ add_action( 'admin_init', 'zao_create_email' );
  * @return [type]       [description]
  */
 function zao_merge_email_tags( $text, $user ) {
+	$has_message = trim( $_POST[ 'zes-message' ] );
 
 	$args = array(
 		'{first_name}'			=> $_POST[ 'zes-name' ],
+		'{custom_message}'		=> $has_message ? $_POST[ 'zes-message' ] : '',
 		'{url-case-study}'		=> esc_url( add_query_arg( 'email', $_POST[ 'zes-email' ], 'http://zao.is/case-study-questionnaire/' ) ),
-		'{url-client-survey}' 	=> esc_url( add_query_arg( 'email', $_POST[ 'zes-email' ], 'http://zao.is/improving/' ) )
+		'{url-client-survey}' 	=> esc_url( add_query_arg( 'email', $_POST[ 'zes-email' ], 'http://zao.is/improving/' ) ),
 	);
 	return str_replace( array_keys( $args ), $args, $text );
 }
@@ -131,6 +133,11 @@ function zao_email_sender_options() {
 			<div class="zes-name">
 				<label for="zes-name">Receiver&rsquo;s First Name</label><br> 
 				<input id="zes-name" name="zes-name" type="text"/><br> 
+			</div>
+			<div class="zes-message">
+				<label for="zes-message">Custom Message</label><br> 
+				<textarea id="zes-message" name="zes-message"></textarea>
+				<p>Suggested message about a project start date or delay. 1-2 sentences.</p> 
 			</div>
 			<input type="Submit" name="submit" value="Send"/>
 		</form>
