@@ -9,14 +9,26 @@
  */
 
 //Enqueue script
-function zao_email_sender_enqueue() {   
+function zao_email_sender_enqueue( $hook ) { 
+	global $zes_settings;
+
+	if( $hook != $zes_settings ) {
+		return;
+	}  
+
     wp_enqueue_script( 'zao_js',
         plugins_url( '/js/zao_email_sender.js', __FILE__ ),
         array( 'jquery' )
     );
+
     wp_enqueue_style( 'zes_style', plugins_url( '/css/zes_style.css',  __FILE__ ) );
+
+    wp_localize_script( 'zes_ajax', 'zes_vars', array(
+		'zes_nonce' => wp_create_nonce( 'zes-nonce' )
+	));
 }
 add_action( 'admin_enqueue_scripts', 'zao_email_sender_enqueue' );
+
 
 /**
  * Sends email, based on template, with placeholders replaced with dynamic data.
@@ -106,41 +118,56 @@ function zao_merge_email_tags( $text, $user ) {
 
 //Creates the Setting in Admin Menu
 function zao_email_sender_menu() {
-	add_menu_page( 'Zao Email Sender', 'Send Email', 'manage_options', 'zao_email_sender', 'zao_email_sender_options', 'dashicons-email-alt', '21' );
+	global $zes_settings;
+	$zes_settings = add_menu_page( 'Zao Email Sender', 'Send Email', 'manage_options', 'zao_email_sender', 'zao_email_sender_render_page', 'dashicons-email-alt', '21' );
 }
 
 add_action( 'admin_menu', 'zao_email_sender_menu' );
 
 //HTML formatting to Send Email
-function zao_email_sender_options() {
+function zao_email_sender_render_page() {
 	if ( !current_user_can( 'manage_options' ) )  {
 		wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
 	} ?>
 
 	<div class="wrap">
-		<h1>Zao Email Sender</h1>
-		<p>Easily send boilerplate HTML emails to clients.</p>
-		<form id="zes-sender" method="post" action="">
-			<label for="zes-email">Receiver&rsquo;s Email</label><br>
-			<input id="zes-email" name="zes-email" type="email"/><br> 
-			<label for="zes-template">Select the Email Template</label><br>
-			<select id="zes-template" name="zes-template">
-				<option value="welcome">Welcome Letter</option>
-				<option value="client-survey">Client Satisfaction Survey</option>
-				<option value="case-study">Case Study</option>
-				<option value="case-study-followup">Case Study Followup</option>
-			</select><br>
-			<div class="zes-name">
-				<label for="zes-name">Receiver&rsquo;s First Name</label><br> 
-				<input id="zes-name" name="zes-name" type="text"/><br> 
-			</div>
-			<div class="zes-message">
-				<label for="zes-message">Custom Message</label><br> 
-				<textarea id="zes-message" name="zes-message"></textarea>
-				<p>Suggested message about a project start date or delay. 1-2 sentences.</p> 
-			</div>
-			<input type="Submit" name="submit" value="Send"/>
-		</form>
+		<div class="settings">
+			<h1>Zao Email Sender</h1>
+			<p>Easily send boilerplate HTML emails to clients.</p>
+			<form id="zes-sender" method="post" action="">
+				<label for="zes-email">Receiver&rsquo;s Email</label><br>
+				<input id="zes-email" name="zes-email" type="email"/><br> 
+				<label for="zes-template">Select the Email Template</label><br>
+				<select id="zes-template" name="zes-template">
+					<option value="welcome">Welcome Letter</option>
+					<option value="client-survey">Client Satisfaction Survey</option>
+					<option value="case-study">Case Study</option>
+					<option value="case-study-followup">Case Study Followup</option>
+				</select><br>
+				<div class="zes-name">
+					<label for="zes-name">Receiver&rsquo;s First Name</label><br> 
+					<input id="zes-name" name="zes-name" type="text"/><br> 
+				</div>
+				<div class="zes-message">
+					<label for="zes-message">Custom Message</label><br> 
+					<textarea id="zes-message" name="zes-message"></textarea>
+					<p>Suggested message about a project start date or delay. 1-2 sentences.</p> 
+				</div>
+				<input type="Submit" name="submit" value="Send"/>
+			</form>
+		</div>
+		<div class="viewer">
+		
+		</div>
 	</div>
 
-<?php } ?>
+<?php } 
+
+add_action( 'wp_ajax_zes_get_ajax', 'zes_process_ajax' );
+
+function zes_process_ajax() {
+
+	echo 'This is my response';
+
+	die();
+}
