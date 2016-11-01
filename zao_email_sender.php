@@ -16,14 +16,14 @@ function zao_email_sender_enqueue( $hook ) {
 		return;
 	}  
 
-    wp_enqueue_script( 'zao_js',
+    wp_enqueue_script( 'zes_js',
         plugins_url( '/js/zao_email_sender.js', __FILE__ ),
         array( 'jquery' )
     );
 
     wp_enqueue_style( 'zes_style', plugins_url( '/css/zes_style.css',  __FILE__ ) );
 
-    wp_localize_script( 'zes_ajax', 'zes_vars', array(
+    wp_localize_script( 'zes_js', 'zes_vars', array(
 		'zes_nonce' => wp_create_nonce( 'zes-nonce' )
 	));
 }
@@ -85,7 +85,7 @@ function zao_send_email( $template, $receiver, $subject, $extra = '' ) {
 function zao_create_email() {
 
 	if( isset( $_POST['zes-template'] ) && $_POST['zes-template'] === 'welcome' ) {
-		zao_send_email( 'welcome-letter', $_POST['zes-email'], 'Project Start with Zao' );
+		zao_send_email( 'welcome', $_POST['zes-email'], 'Project Start with Zao' );
 	} elseif ( isset( $_POST['zes-template'] ) && $_POST['zes-template'] === 'case-study' ) {
 		zao_send_email( 'case-study', $_POST['zes-email'], 'Congrats on your successful project!' );
 	} elseif ( isset( $_POST['zes-template'] ) && $_POST['zes-template'] === 'case-study-followup' ) {
@@ -124,16 +124,16 @@ function zao_email_sender_menu() {
 
 add_action( 'admin_menu', 'zao_email_sender_menu' );
 
-//HTML formatting to Send Email
+//HTML formatting for Form
 function zao_email_sender_render_page() {
 	if ( !current_user_can( 'manage_options' ) )  {
 		wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
 	} ?>
 
 	<div class="wrap">
+		<h1>Zao Email Sender</h1>
+		<p>Easily send boilerplate HTML emails to clients.</p>
 		<div class="settings">
-			<h1>Zao Email Sender</h1>
-			<p>Easily send boilerplate HTML emails to clients.</p>
 			<form id="zes-sender" method="post" action="">
 				<label for="zes-email">Receiver&rsquo;s Email</label><br>
 				<input id="zes-email" name="zes-email" type="email"/><br> 
@@ -153,11 +153,12 @@ function zao_email_sender_render_page() {
 					<textarea id="zes-message" name="zes-message"></textarea>
 					<p>Suggested message about a project start date or delay. 1-2 sentences.</p> 
 				</div>
-				<input type="Submit" name="submit" value="Send"/>
+				<input class="zes-submit" type="Submit" name="submit" value="Send Email"/>
 			</form>
 		</div>
 		<div class="viewer">
-		
+			<h2>Email Previewer</h2>
+			<div class="zes-email-template"></div>
 		</div>
 	</div>
 
@@ -167,7 +168,15 @@ add_action( 'wp_ajax_zes_get_ajax', 'zes_process_ajax' );
 
 function zes_process_ajax() {
 
-	echo 'This is my response';
+	if( !isset( $_POST['zes_nonce'] ) || !wp_verify_nonce( $_POST['zes_nonce'], 'zes-nonce') ) {
+		die( 'Permisions check failed' );
+	}
+
+	$template = $_POST['zes_template'];
+
+	$template_file = plugin_dir_path( __FILE__ )  . 'emails/' . $template . '.php';
+
+	include_once( $template_file );
 
 	die();
 }

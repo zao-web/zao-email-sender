@@ -1,4 +1,37 @@
 .zes-message textarea {
-	min-width: 300px;
     min-height: 100px;
+}
+
+#zes-sender input,
+.zes-message textarea,
+#zes-sender select {
+	width: 100%;
+}
+
+.viewer {
+	width: 65%;
+	display: inline-block;
+	vertical-align: top;
+}
+
+.viewer h2 {
+	margin-top: 0;
+}
+
+.zes-email-template {
+	background: #fff;
+	min-height: 500px;
+	border: 1px solid #ddd;
+	box-shadow: -5px 5px 15px #ccc;
+}
+
+.settings {
+	display: inline-block;
+	width: 30%;
+	margin-right: 2%;
+}
+
+.zes-submit {
+	padding: 5px 0;
+	margin-top: 1em;
 }
