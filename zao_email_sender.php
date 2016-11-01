@@ -169,12 +169,12 @@ add_action( 'wp_ajax_zes_get_ajax', 'zes_process_ajax' );
 function zes_process_ajax() {
 
 	if( !isset( $_POST['zes_nonce'] ) || !wp_verify_nonce( $_POST['zes_nonce'], 'zes-nonce') ) {
-		die( 'Permisions check failed' );
+		die( 'Permissions check failed' );
 	}
 
 	$template = $_POST['zes_template'];
 
-	$template_file = plugin_dir_path( __FILE__ )  . 'emails/' . $template . '.php';
+	$template_file = plugin_dir_path( __FILE__ )  . 'emails/' . $template . '.php';	
 
 	include_once( $template_file );
 
