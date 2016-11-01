@@ -153,7 +153,7 @@ function zao_email_sender_render_page() {
 					<textarea id="zes-message" name="zes-message"></textarea>
 					<p>Suggested message about a project start date or delay. 1-2 sentences.</p> 
 				</div>
-				<input class="zes-submit" type="Submit" name="submit" value="Send Email"/>
+				<input class="zes-submit button" type="Submit" name="submit" value="Send Email"/>
 			</form>
 		</div>
 		<div class="viewer">
