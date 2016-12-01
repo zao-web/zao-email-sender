@@ -1,4 +1,3 @@
-console.log( 'zes_vars', zes_vars );
 jQuery( document ).ready(function( $ ) {
 	$( '#zes-template' ).change( function() {
 
@@ -11,7 +10,7 @@ jQuery( document ).ready(function( $ ) {
 	    }
 	});
 
-	$( '#zes-sender' ).on( 'keyup', function() {
+	$( '#zes-sender' ).on( 'change', function() {
 
 		var data = {
 			action 			: 'zes_get_ajax',
@@ -27,5 +26,5 @@ jQuery( document ).ready(function( $ ) {
 		});
 	});
 
-	$( '#zes-sender' ).trigger( 'keyup' );
+	$( '#zes-sender' ).trigger( 'change' );
 });

@@ -45,13 +45,12 @@ function zao_mail_from_name( $name ) {
 
 
 /**
- * Sends email, based on template, with placeholders replaced with dynamic data.
- *
- * @param  string $template  Filename of template in /emails folder in plugin
- * @param  string $user      User message is being sent to.
- * @param  string $subject   Subject
- *
- * @return boolean           True if successfully sent, false if not.
+ * Sends email, based on template, with placeholders replaced with dynamic data	
+ * @param  string $template Filename of template in /emails folder in plugin
+ * @param  string $receiver Email message is being sent to.
+ * @param  string $subject  Subject of email
+ * 
+ * @return boolean          True if successfully sent, false if not.
  */
 function zao_send_email( $template, $receiver, $subject, $extra = '' ) {
 
