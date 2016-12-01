@@ -132,12 +132,6 @@ function zao_merge_email_tags( $html, $args = array() ) {
 	return str_replace( array_keys( $replacements ), array_values( $replacements ), $html );
 }
 
-//Creates the Setting in Admin Menu
-function zao_email_sender_menu() {
-	global $zes_settings;
-	$zes_settings = add_menu_page( 'Zao Email Sender', 'Send Email', 'manage_options', 'zao_email_sender', 'zao_email_sender_render_page', 'dashicons-email-alt', '21' );
-}
-
 add_action( 'admin_menu', 'zao_email_sender_menu' );
 
 //HTML formatting for Form
@@ -147,10 +141,6 @@ function zao_email_sender_render_page() {
 	} ?>
 
 	<div class="wrap">
-		<h2 class="nav-tab-wrapper">
-		    <a href="?page=zao_email_sender&tab=send_emails" class="nav-tab">Send Emails</a>
-		    <a href="?page=zao_email_sender&tab=settings" class="nav-tab">Settings</a>
-		</h2>
 		<h1>Zao Email Sender</h1>
 		<p>Easily send boilerplate HTML emails to clients.</p>
 		<div class="settings">
