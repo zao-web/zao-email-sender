@@ -91,7 +91,10 @@ function zao_send_email( $template, $receiver, $subject ) {
 	exit;
 }
 
-//Send the Appropriate email
+/**
+ * Creates the appropriate email based on what template has be selected by the user. 
+ * @return [type] [description]
+ */
 function zao_create_email() {
 
 	if( isset( $_POST['zes-template'] ) && $_POST['zes-template'] === 'welcome' ) {
@@ -108,7 +111,7 @@ add_action( 'admin_init', 'zao_create_email' );
 
 
 /**
- * Replace the merge tags with the actual data.do
+ * Replace the merge tags with the actual data.
  *
  * @param  string $html The HTML markup to do the replacements on.
  * @param  array  $args An array of arguments to use in the tag replacements. Can be 'name', 'message', 'email'.
@@ -132,7 +135,10 @@ function zao_merge_email_tags( $html, $args = array() ) {
 	return str_replace( array_keys( $replacements ), array_values( $replacements ), $html );
 }
 
-//Creates the Setting in Admin Menu
+/**
+ * Creates the UI in admin for the plugin
+ * @return [type] [description]
+ */
 function zao_email_sender_menu() {
 	global $zes_settings;
 	$zes_settings = add_menu_page( 'Zao Email Sender', 'Send Email', 'manage_options', 'zao_email_sender', 'zao_email_sender_render_page', 'dashicons-email-alt', '21' );
@@ -140,7 +146,10 @@ function zao_email_sender_menu() {
 
 add_action( 'admin_menu', 'zao_email_sender_menu' );
 
-//HTML formatting for Form
+/**
+ * HTML to render the plugin page
+ * @return [type] [description]
+ */
 function zao_email_sender_render_page() {
 	if ( !current_user_can( 'manage_options' ) )  {
 		wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
@@ -182,6 +191,10 @@ function zao_email_sender_render_page() {
 
 add_action( 'wp_ajax_zes_get_ajax', 'zes_process_ajax' );
 
+/**
+ * Uses AJAX to preview the email with it's dynamic content before sending it.
+ * @return [type] [description]
+ */
 function zes_process_ajax() {
 
 	if( !isset( $_POST['zes_nonce'] ) || !wp_verify_nonce( $_POST['zes_nonce'], 'zes-nonce') ) {
@@ -194,7 +207,7 @@ function zes_process_ajax() {
 
 	$args = array(
 		'name' => $_POST['zes_name'],
-		'message' => $_POST['zes_message'],
+		'message' => wp_unslash( $_POST['zes_message'] ),
 		'email' => $_POST['zes_email'],
 	);
 
