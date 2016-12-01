@@ -52,7 +52,7 @@ function zao_mail_from_name( $name ) {
  * 
  * @return boolean          True if successfully sent, false if not.
  */
-function zao_send_email( $template, $receiver, $subject, $extra = '' ) {
+function zao_send_email( $template, $receiver, $subject ) {
 
 	add_filter( 'wp_mail_content_type', function() {
 		return 'text/html';
