@@ -10,7 +10,7 @@ jQuery( document ).ready(function( $ ) {
 	    }
 	});
 
-	$( '#zes-sender' ).on( 'change', function() {
+	$( '#zes-sender' ).bind('keyup change', function(e) {
 
 		var data = {
 			action 			: 'zes_get_ajax',
