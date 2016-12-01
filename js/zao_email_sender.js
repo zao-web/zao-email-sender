@@ -1,3 +1,4 @@
+console.log( 'zes_vars', zes_vars );
 jQuery( document ).ready(function( $ ) {
 	$( '#zes-template' ).change( function() {
 
@@ -10,17 +11,21 @@ jQuery( document ).ready(function( $ ) {
 	    }
 	});
 
-	$( '#zes-sender' ).change( function() {
-		data = {
-			action 		 : 'zes_get_ajax',
-			zes_nonce	 : zes_vars.zes_nonce,
-	        zes_template : $( '#zes-template' ).select().val(),
-	        zes_name 	 : $( '#zes-name' ).blur().val(),
-	        zes_message  : $( '#zes-message' ).blur().val()
-		}
+	$( '#zes-sender' ).on( 'keyup', function() {
+
+		var data = {
+			action 			: 'zes_get_ajax',
+			zes_nonce		: zes_vars.nonce,
+	        zes_template	: $( '#zes-template' ).val(),
+	        zes_name 	 	: $( '#zes-name' ).val(),
+	        zes_message  	: $( '#zes-message' ).val(),
+	        zes_email   	: $( '#zes-email' ).val()
+		};
 
 		$.post(ajaxurl, data, function( response ){
 			$( '.zes-email-template' ).html(response);
 		});
-	})
+	});
+
+	$( '#zes-sender' ).trigger( 'keyup' );
 });

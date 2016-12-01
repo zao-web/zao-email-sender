@@ -8,7 +8,11 @@
  * Author URI: http://zao.is
  */
 
-//Enqueue script
+/**
+ * Enqueue script
+ * @param  string $hook Admin page hook.
+ * @return void       
+ */
 function zao_email_sender_enqueue( $hook ) { 
 	global $zes_settings;
 
@@ -16,18 +20,28 @@ function zao_email_sender_enqueue( $hook ) {
 		return;
 	}  
 
+    wp_enqueue_style( 'zes_style', plugins_url( '/css/zes_style.css',  __FILE__ ) );
+
     wp_enqueue_script( 'zes_js',
         plugins_url( '/js/zao_email_sender.js', __FILE__ ),
         array( 'jquery' )
     );
 
-    wp_enqueue_style( 'zes_style', plugins_url( '/css/zes_style.css',  __FILE__ ) );
-
+    $current_user = wp_get_current_user();
     wp_localize_script( 'zes_js', 'zes_vars', array(
-		'zes_nonce' => wp_create_nonce( 'zes-nonce' )
+		'nonce' => wp_create_nonce( 'zes-nonce' ),
+		'user' => $current_user,
 	));
 }
 add_action( 'admin_enqueue_scripts', 'zao_email_sender_enqueue' );
+
+function zao_mail_from( $email ) {
+	return "office@zao.is";
+}
+
+function zao_mail_from_name( $name ) {
+    return "Zao Office";
+}
 
 
 /**
@@ -46,16 +60,7 @@ function zao_send_email( $template, $receiver, $subject, $extra = '' ) {
 	} );
 
 	add_filter( 'wp_mail_from', 'zao_mail_from' );
-	function zao_mail_from( $email )
-	{
-	    return "office@zao.is";
-	}
-
 	add_filter( 'wp_mail_from_name', 'zao_mail_from_name' );
-	function zao_mail_from_name( $name )
-	{
-	    return "Zao Office";
-	}
 
 	$template_file = plugin_dir_path( __FILE__ )  . 'emails/' . $template . '.php';
 	
@@ -73,7 +78,13 @@ function zao_send_email( $template, $receiver, $subject, $extra = '' ) {
 
 	$text = ob_get_clean();
 
-	$text = zao_merge_email_tags( $text, $receiver );
+	$args = array(
+		'name' => $_POST['zes-name'],
+		'message' => $_POST['zes-message'],
+		'email' => $receiver,
+	);
+
+	$text = zao_merge_email_tags( $text, $args );
 
 	$mail = wp_mail( $receiver, $subject, $text );
 	
@@ -98,22 +109,28 @@ add_action( 'admin_init', 'zao_create_email' );
 
 
 /**
- * [gb_merge_email_tags description]
+ * Replace the merge tags with the actual data.do
  *
- * @param  [type] $text [description]
- * @param  [type] $user [description]
- * @return [type]       [description]
+ * @param  string $html The HTML markup to do the replacements on.
+ * @param  array  $args An array of arguments to use in the tag replacements. Can be 'name', 'message', 'email'.
+ * @return string       The modified HTML markup.
  */
-function zao_merge_email_tags( $text, $user ) {
-	$has_message = trim( $_POST[ 'zes-message' ] );
+function zao_merge_email_tags( $html, $args = array() ) {
+	$args = wp_parse_args( $args, array(
+		'name' => '',
+		'message' => '',
+		'email' => '',
+	) );
 
-	$args = array(
-		'{first_name}'			=> $_POST[ 'zes-name' ],
-		'{custom_message}'		=> $has_message ? $_POST[ 'zes-message' ] : '',
-		'{url-case-study}'		=> esc_url( add_query_arg( 'email', $_POST[ 'zes-email' ], 'http://zao.is/case-study-questionnaire/' ) ),
-		'{url-client-survey}' 	=> esc_url( add_query_arg( 'email', $_POST[ 'zes-email' ], 'http://zao.is/improving/' ) ),
+	$has_message = trim( $args['message'] );
+
+	$replacements = array(
+		'{first_name}'			=> $args['name'],
+		'{custom_message}'		=> $has_message ? $args['message'] : '',
+		'{url-case-study}'		=> esc_url( add_query_arg( 'email', urlencode( $args['email'] ), 'http://zao.is/case-study-questionnaire/' ) ),
+		'{url-client-survey}' 	=> esc_url( add_query_arg( 'email', urlencode( $args['email'] ), 'http://zao.is/improving/' ) ),
 	);
-	return str_replace( array_keys( $args ), $args, $text );
+	return str_replace( array_keys( $replacements ), array_values( $replacements ), $html );
 }
 
 //Creates the Setting in Admin Menu
@@ -131,6 +148,10 @@ function zao_email_sender_render_page() {
 	} ?>
 
 	<div class="wrap">
+		<h2 class="nav-tab-wrapper">
+		    <a href="?page=zao_email_sender&tab=send_emails" class="nav-tab">Send Emails</a>
+		    <a href="?page=zao_email_sender&tab=settings" class="nav-tab">Settings</a>
+		</h2>
 		<h1>Zao Email Sender</h1>
 		<p>Easily send boilerplate HTML emails to clients.</p>
 		<div class="settings">
@@ -176,7 +197,20 @@ function zes_process_ajax() {
 
 	$template_file = plugin_dir_path( __FILE__ )  . 'emails/' . $template . '.php';	
 
+	$args = array(
+		'name' => $_POST['zes_name'],
+		'message' => $_POST['zes_message'],
+		'email' => $_POST['zes_email'],
+	);
+
+	ob_start();
+
 	include_once( $template_file );
+
+	$html = ob_get_clean();
+	$html = zao_merge_email_tags( $html, $args );
+
+	echo $html;
 
 	die();
 }
