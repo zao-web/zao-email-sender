@@ -1,3 +1,7 @@
+.zes-tab-page-wrapper {
+	padding-top: 2em;
+}
+
 .zes-message textarea {
     min-height: 100px;
 }
@@ -8,13 +12,13 @@
 	width: 100%;
 }
 
-.viewer {
+.zes-viewer {
 	width: 65%;
 	display: inline-block;
 	vertical-align: top;
 }
 
-.viewer h2 {
+.zes-viewer h2 {
 	margin-top: 0;
 }
 
@@ -25,7 +29,7 @@
 	box-shadow: -5px 5px 15px #ccc;
 }
 
-.settings {
+.zes-email-form {
 	display: inline-block;
 	width: 30%;
 	margin-right: 2%;

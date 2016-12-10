@@ -146,6 +146,11 @@ function zao_email_sender_menu() {
 
 add_action( 'admin_menu', 'zao_email_sender_menu' );
 
+function zes_options_menu() {
+	add_submenu_page( 'zao_email_sender', 'Zao Email Sender Settings', 'Settings', 'manage_options', 'zes_settings', 'zao_email_sender_render_page' );
+}
+add_action( 'admin_menu', 'zes_options_menu' );
+
 /**
  * HTML to render the plugin page
  * @return [type] [description]
@@ -158,36 +163,161 @@ function zao_email_sender_render_page() {
 	<div class="wrap">
 		<h1>Zao Email Sender</h1>
 		<p>Easily send boilerplate HTML emails to clients.</p>
-		<div class="settings">
-			<form id="zes-sender" method="post" action="">
-				<label for="zes-email">Receiver&rsquo;s Email</label><br>
-				<input id="zes-email" name="zes-email" type="email"/><br> 
-				<label for="zes-template">Select the Email Template</label><br>
-				<select id="zes-template" name="zes-template">
-					<option value="welcome">Welcome Letter</option>
-					<option value="client-survey">Client Satisfaction Survey</option>
-					<option value="case-study">Case Study</option>
-					<option value="case-study-followup">Case Study Followup</option>
-				</select><br>
-				<div class="zes-name">
-					<label for="zes-name">Receiver&rsquo;s First Name</label><br> 
-					<input id="zes-name" name="zes-name" type="text"/><br> 
-				</div>
-				<div class="zes-message">
-					<label for="zes-message">Custom Message</label><br> 
-					<textarea id="zes-message" name="zes-message"></textarea>
-					<p>Suggested message about a project start date or delay. 1-2 sentences.</p> 
-				</div>
-				<input class="zes-submit button" type="Submit" name="submit" value="Send Email"/>
-			</form>
-		</div>
-		<div class="viewer">
-			<h2>Email Previewer</h2>
-			<div class="zes-email-template"></div>
+		<?php settings_errors(); ?>
+
+		<?php zes_nav_tab_html(); ?>
+		
+		<div class="zes-tab-page-wrapper"> 
+
+			<?php zes_send_email_html(); ?>
+
+			<?php zes_settings_html(); ?>
+			
 		</div>
 	</div>
 
 <?php } 
+
+function zes_nav_tab_html() {
+	$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'send_email'; ?>
+
+	<h2 class="nav-tab-wrapper">
+	    <a href="?page=zao_email_sender&tab=send_email" class="nav-tab <?php echo $active_tab == 'send_email' ? 'nav-tab-active' : ''; ?>">Send Email</a>
+	    <a href="?page=zao_email_sender&tab=settings" class="nav-tab <?php echo $active_tab == 'settings' ? 'nav-tab-active' : ''; ?>">Settings</a>
+	</h2>
+<?php }
+
+function zes_send_email_html() { ?>
+
+	<div class="zes-email-form">
+		<form id="zes-sender" method="post" action="">
+			<label for="zes-email">Receiver&rsquo;s Email</label><br>
+			<input id="zes-email" name="zes-email" type="email"/><br> 
+			<label for="zes-template">Select the Email Template</label><br>
+			<select id="zes-template" name="zes-template">
+				<option value="welcome">Welcome Letter</option>
+				<option value="client-survey">Client Satisfaction Survey</option>
+				<option value="case-study">Case Study</option>
+				<option value="case-study-followup">Case Study Followup</option>
+			</select><br>
+			<div class="zes-name">
+				<label for="zes-name">Receiver&rsquo;s First Name</label><br> 
+				<input id="zes-name" name="zes-name" type="text"/><br> 
+			</div>
+			<div class="zes-message">
+				<label for="zes-message">Custom Message</label><br> 
+				<textarea id="zes-message" name="zes-message"></textarea>
+				<p>Suggested message about a project start date or delay. 1-2 sentences.</p> 
+			</div>
+			<input class="zes-submit button" type="Submit" name="submit" value="Send Email"/>
+		</form>
+	</div>
+	<div class="zes-viewer">
+		<h2>Email Previewer</h2>
+		<div class="zes-email-template"></div>
+	</div>
+
+<?php }
+
+function zes_settings_html() { ?>
+	<div class="zes-options">
+		<form method="post" action="options.php">
+            <?php settings_fields( 'general' ); ?>
+            <?php do_settings_sections( 'general' ); ?>           
+            <?php submit_button(); ?>
+        </form>
+	</div>
+<?php }
+
+function zes_initialize_plugin_settings() {
+	if( false == get_option( 'zao_email_sender_render_page' ) ) {  
+	    add_option( 'zao_email_sender_render_page' );
+	} 
+	// First, we register a section. This is necessary since all future options must belong to one.
+    add_settings_section(
+        'settings_section',         // ID used to identify this section and with which to register options
+        'Settings',                  // Title to be displayed on the administration page
+        'zes_settings_callback', // Callback used to render the description of the section
+        'general'         // Page on which to add this section of options
+    );
+    // Next, we will introduce the fields.
+	add_settings_field( 
+	    'from_email',                      // ID used to identify the field throughout the theme
+	    'From Email',                           // The label to the left of the option interface element
+	    'zes_from_email_callback',   // The name of the function responsible for rendering the option interface
+	    'general',                          // The page on which this option will be displayed
+	    'settings_section',         // The name of the section to which this field belongs
+	    array(                              // The array of arguments to pass to the callback. In this case, just a description.
+	        'Enter the email address you want emails to be from (i.e. me@email.com). Defaults to admin email.'
+	    )
+	);
+	add_settings_field( 
+	    'from_name',                      // ID used to identify the field throughout the theme
+	    'From  Name',                           // The label to the left of the option interface element
+	    'zes_from_name_callback',   // The name of the function responsible for rendering the option interface
+	    'general',                          // The page on which this option will be displayed
+	    'settings_section',         // The name of the section to which this field belongs
+	    array(                              // The array of arguments to pass to the callback. In this case, just a description.
+	        'Enter the name you want emails to be from (i.e. John Doe). Defaults to admin name.'
+	    )
+	);
+
+	// Finally, we register the fields with WordPress
+	register_setting(
+	    'settings_section',
+	    'from_email'
+	);
+	register_setting(
+	    'settings_section',
+	    'from_name'
+	);
+}
+add_action('admin_init', 'zes_initialize_plugin_settings');
+
+
+/**
+ * This function provides a simple description for the General Options page. 
+ *
+ * It is called from the 'sandbox_initialize_theme_options' function by being passed as a parameter
+ * in the add_settings_section function.
+ */
+function zes_settings_callback() {
+    echo '<p>General settings for the Zao Email Sender Plugin</p>';
+}
+
+/**
+ * This function renders the interface elements for toggling the visibility of the header element.
+ * 
+ * It accepts an array of arguments and expects the first element in the array to be the description
+ * to be displayed next to the checkbox.
+ */
+function zes_from_email_callback($args) {
+
+	// Here, we will take the first argument of the array and add it to a label next to the checkbox
+    $html = '<label for="from_email"> '  . $args[0] . '</label><br>'; 
+     
+    // Note the ID and the name attribute of the element match that of the ID in the call to add_settings_field
+    $html .= '<input type="text" id="from_email" name="from_email" />'; 
+    echo $html;
+     
+}
+
+/**
+ * This function renders the interface elements for toggling the visibility of the header element.
+ * 
+ * It accepts an array of arguments and expects the first element in the array to be the description
+ * to be displayed next to the checkbox.
+ */
+function zes_from_name_callback($args) {
+
+	// Here, we will take the first argument of the array and add it to a label next to the checkbox
+    $html = '<label for="from_name"> '  . $args[0] . '</label><br>'; 
+     
+    // Note the ID and the name attribute of the element match that of the ID in the call to add_settings_field
+    $html .= '<input type="text" id="from_name" name="from_name" />'; 
+    echo $html;
+     
+}
 
 add_action( 'wp_ajax_zes_get_ajax', 'zes_process_ajax' );
 
