@@ -35,12 +35,28 @@ function zao_email_sender_enqueue( $hook ) {
 }
 add_action( 'admin_enqueue_scripts', 'zao_email_sender_enqueue' );
 
+/**
+ * Sets the from email address
+ * @param  string $email Email address
+ * @return string        Returns either the saved email or defaults to office@zao.is if not set
+ */
 function zao_mail_from( $email ) {
-	return "office@zao.is";
+	$options = get_option( 'zes_plugin_settings' );
+	$email = '';
+	$email = isset( $options['from_email'] ) ? $options['from_email'] : 'office@zao.is';
+	return $email;
 }
 
+/**
+ * Sets the from name on the email
+ * @param  string $name Name of sender
+ * @return string       Returns either the saved name or defaults to Zao Office if not set
+ */
 function zao_mail_from_name( $name ) {
-    return "Zao Office";
+	$options = get_option( 'zes_plugin_settings' );
+	$name = '';
+	$name = isset( $options['from_name'] ) ? $options['from_name'] : 'Zao Office';
+	return $name;
 }
 
 
