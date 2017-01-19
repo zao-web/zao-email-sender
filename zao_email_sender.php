@@ -42,8 +42,7 @@ add_action( 'admin_enqueue_scripts', 'zao_email_sender_enqueue' );
  */
 function zao_mail_from( $email ) {
 	$options = get_option( 'zes_plugin_settings' );
-	$email = '';
-	$email = isset( $options['from_email'] ) ? $options['from_email'] : 'office@zao.is';
+	$email = ! $options['from_email'] === '' ? $options['from_email'] : 'office@zao.is';
 	return $email;
 }
 
@@ -54,8 +53,7 @@ function zao_mail_from( $email ) {
  */
 function zao_mail_from_name( $name ) {
 	$options = get_option( 'zes_plugin_settings' );
-	$name = '';
-	$name = isset( $options['from_name'] ) ? $options['from_name'] : 'Zao Office';
+	$name = !$options['from_name'] === '' ? $options['from_name'] : 'Zao Office';
 	return $name;
 }
 
