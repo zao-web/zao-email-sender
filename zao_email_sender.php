@@ -282,6 +282,28 @@ function zes_initialize_plugin_settings() {
 	    )
 	);
 
+	add_settings_field( 
+	    'email_template_name',                      // ID used to identify the field throughout the theme
+	    'New Email Template Name',                           // The label to the left of the option interface element
+	    'zes_email_template_name_callback',   // The name of the function responsible for rendering the option interface
+	    'zes_plugin_settings',                          // The page on which this option will be displayed
+	    'settings_section',         // The name of the section to which this field belongs
+	    array(                              // The array of arguments to pass to the callback. In this case, just a description.
+	        'Enter the name of your new email template. i.e. "We Miss You"'
+	    )
+	);
+
+	add_settings_field( 
+	    'email_template_html',                      // ID used to identify the field throughout the theme
+	    'New Email Template HTML',                           // The label to the left of the option interface element
+	    'zes_email_template_html_callback',   // The name of the function responsible for rendering the option interface
+	    'zes_plugin_settings',                          // The page on which this option will be displayed
+	    'settings_section',         // The name of the section to which this field belongs
+	    array(                              // The array of arguments to pass to the callback. In this case, just a description.
+	        'Paste the raw email HTML into the textbox. Use Mailchimp&rsquo;s <a href="https://templates.mailchimp.com/resources/inline-css/">CSS Inliner Tool</a> to convert email HTML into useable format.'
+	    )
+	);
+
 	// Finally, we register the fields with WordPress
 	register_setting(
 	    'zes_plugin_settings',
@@ -351,7 +373,67 @@ function zes_from_name_callback($args) {
      
 }
 
+/**
+ * This function renders the interface elements for creating an Email Template.
+ * 
+ * It accepts an array of arguments and expects the first element in the array to be the description
+ * to be displayed next to the label.
+ */
+function zes_email_template_name_callback($args) {
+	// First, we read the zes settings collection
+    $options = get_option( 'zes_plugin_settings' );
+
+    // Next, we need to make sure the element is defined in the options. If not, we'll set an empty string.
+    $template_name = '';
+    if( isset( $options['email_template_name'] ) ) {
+        $template_name = $options['email_template_name'];
+    } 
+
+	// Here, we will take the first argument of the array and add it to a label
+    $html = '<label for="email_template_name"> '  . $args[0] . '</label><br>'; 
+     
+    // Note the ID and the name attribute of the element match that of the ID in the call to add_settings_field
+    $html .= '<input type="text" id="email_template_name" name="zes_plugin_settings[email_template_name]" value="' . $template_name .'" />'; 
+    echo $html; 
+}
+
+/**
+ * This function renders the interface elements for creating an Email Template.
+ * 
+ * It accepts an array of arguments and expects the first element in the array to be the description
+ * to be displayed next to the label.
+ */
+function zes_email_template_html_callback($args) {
+	// First, we read the zes settings collection
+    $options = get_option( 'zes_plugin_settings' );
+
+    // Next, we need to make sure the element is defined in the options. If not, we'll set an empty string.
+    $template_html = '';
+    if( isset( $options['email_template_html'] ) ) {
+        $template_html = $options['email_template_html'];
+    } 
+
+	// Here, we will take the first argument of the array and add it to a label
+    $html = '<label for="email_template_html"> '  . $args[0] . '</label><br>'; 
+     
+    // Note the ID and the name attribute of the element match that of the ID in the call to add_settings_field
+    $html .= '<textarea id="email_template_html" name="zes_plugin_settings[email_template_html]" value="' . $template_html .'"></textarea>'; 
+    echo $html; 
+}
+
 add_action( 'wp_ajax_zes_get_ajax', 'zes_process_ajax' );
+
+
+//To Do: 
+// - Ensure textarea has submitted content as well as email template name
+//    - If textarea is empty, throw an error
+// - Check submitted name to see if same name exists already
+// - Send an error message if identical name exits
+// - If unique name, turn name into slug
+// - Use slug name to create a .php file in /emails folder
+// - Use textarea content to be the file contents
+// - Get template name to sync with correct template file in zao_create_email()
+
 
 /**
  * Uses AJAX to preview the email with it's dynamic content before sending it.

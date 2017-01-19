@@ -38,3 +38,8 @@
 #zes-sender .button {
 	margin-top: 1em;
 }
+
+#email_template_html {
+	width: 100%;
+	min-height: 350px;
+}
