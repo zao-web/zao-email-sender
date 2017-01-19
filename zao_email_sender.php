@@ -254,7 +254,7 @@ function zes_initialize_plugin_settings() {
 	    'zes_plugin_settings',                          // The page on which this option will be displayed
 	    'settings_section',         // The name of the section to which this field belongs
 	    array(                              // The array of arguments to pass to the callback. In this case, just a description.
-	        'Enter the email address you want emails to be from (i.e. me@email.com). Defaults to admin email.'
+	        'Enter the email address you want emails to be from (i.e. me@email.com). Defaults to office@zao.is'
 	    )
 	);
 	add_settings_field( 
@@ -264,7 +264,7 @@ function zes_initialize_plugin_settings() {
 	    'zes_plugin_settings',                          // The page on which this option will be displayed
 	    'settings_section',         // The name of the section to which this field belongs
 	    array(                              // The array of arguments to pass to the callback. In this case, just a description.
-	        'Enter the name you want emails to be from (i.e. John Doe). Defaults to admin name.'
+	        'Enter the name you want emails to be from (i.e. John Doe). Defaults to Zao Office.'
 	    )
 	);
 
