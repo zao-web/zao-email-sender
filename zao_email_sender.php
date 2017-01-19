@@ -165,26 +165,32 @@ function zao_email_sender_render_page() {
 		<p>Easily send boilerplate HTML emails to clients.</p>
 		<?php settings_errors(); ?>
 
-		<?php zes_nav_tab_html(); ?>
+		<?php zes_tab_body_html(); ?>
 		
-		<div class="zes-tab-page-wrapper"> 
-
-			<?php zes_send_email_html(); ?>
-
-			<?php zes_settings_html(); ?>
-			
-		</div>
 	</div>
 
-<?php } 
+<?php }
 
-function zes_nav_tab_html() {
+/**
+ * Generates the HTML for the setting tabs
+ * @return [type] [description]
+ */
+function zes_tab_body_html() {
 	$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'send_email'; ?>
 
 	<h2 class="nav-tab-wrapper">
 	    <a href="?page=zao_email_sender&tab=send_email" class="nav-tab <?php echo $active_tab == 'send_email' ? 'nav-tab-active' : ''; ?>">Send Email</a>
 	    <a href="?page=zao_email_sender&tab=settings" class="nav-tab <?php echo $active_tab == 'settings' ? 'nav-tab-active' : ''; ?>">Settings</a>
 	</h2>
+	<div class="zes-tab-page-wrapper">
+
+		<?php if( $active_tab == 'send_email' ) { 
+			zes_send_email_html(); 
+		} else {
+			zes_settings_html();
+		} ?>
+		
+	</div>
 <?php }
 
 function zes_send_email_html() { ?>
@@ -222,30 +228,30 @@ function zes_send_email_html() { ?>
 function zes_settings_html() { ?>
 	<div class="zes-options">
 		<form method="post" action="options.php">
-            <?php settings_fields( 'general' ); ?>
-            <?php do_settings_sections( 'general' ); ?>           
+            <?php settings_fields( 'zes_plugin_settings' ); ?>
+            <?php do_settings_sections( 'zes_plugin_settings' ); ?>           
             <?php submit_button(); ?>
         </form>
 	</div>
 <?php }
 
 function zes_initialize_plugin_settings() {
-	if( false == get_option( 'zao_email_sender_render_page' ) ) {  
-	    add_option( 'zao_email_sender_render_page' );
+	if( false == get_option( 'zes_plugin_settings' ) ) {  
+	    add_option( 'zes_plugin_settings' );
 	} 
 	// First, we register a section. This is necessary since all future options must belong to one.
     add_settings_section(
         'settings_section',         // ID used to identify this section and with which to register options
         'Settings',                  // Title to be displayed on the administration page
         'zes_settings_callback', // Callback used to render the description of the section
-        'general'         // Page on which to add this section of options
+        'zes_plugin_settings'         // Page on which to add this section of options
     );
     // Next, we will introduce the fields.
 	add_settings_field( 
 	    'from_email',                      // ID used to identify the field throughout the theme
 	    'From Email',                           // The label to the left of the option interface element
 	    'zes_from_email_callback',   // The name of the function responsible for rendering the option interface
-	    'general',                          // The page on which this option will be displayed
+	    'zes_plugin_settings',                          // The page on which this option will be displayed
 	    'settings_section',         // The name of the section to which this field belongs
 	    array(                              // The array of arguments to pass to the callback. In this case, just a description.
 	        'Enter the email address you want emails to be from (i.e. me@email.com). Defaults to admin email.'
@@ -255,7 +261,7 @@ function zes_initialize_plugin_settings() {
 	    'from_name',                      // ID used to identify the field throughout the theme
 	    'From  Name',                           // The label to the left of the option interface element
 	    'zes_from_name_callback',   // The name of the function responsible for rendering the option interface
-	    'general',                          // The page on which this option will be displayed
+	    'zes_plugin_settings',                          // The page on which this option will be displayed
 	    'settings_section',         // The name of the section to which this field belongs
 	    array(                              // The array of arguments to pass to the callback. In this case, just a description.
 	        'Enter the name you want emails to be from (i.e. John Doe). Defaults to admin name.'
@@ -264,12 +270,8 @@ function zes_initialize_plugin_settings() {
 
 	// Finally, we register the fields with WordPress
 	register_setting(
-	    'settings_section',
-	    'from_email'
-	);
-	register_setting(
-	    'settings_section',
-	    'from_name'
+	    'zes_plugin_settings',
+	    'zes_plugin_settings'
 	);
 }
 add_action('admin_init', 'zes_initialize_plugin_settings');
@@ -292,12 +294,20 @@ function zes_settings_callback() {
  * to be displayed next to the checkbox.
  */
 function zes_from_email_callback($args) {
+	// First, we read the zes settings collection
+    $options = get_option( 'zes_plugin_settings' );
 
-	// Here, we will take the first argument of the array and add it to a label next to the checkbox
+    // Next, we need to make sure the element is defined in the options. If not, we'll set an empty string.
+    $email = '';
+    if( isset( $options['from_email'] ) ) {
+        $email = $options['from_email'];
+    } 
+
+	// Here, we will take the first argument of the array and add it to a label 
     $html = '<label for="from_email"> '  . $args[0] . '</label><br>'; 
      
     // Note the ID and the name attribute of the element match that of the ID in the call to add_settings_field
-    $html .= '<input type="text" id="from_email" name="from_email" />'; 
+    $html .= '<input type="text" id="from_email" name="zes_plugin_settings[from_email]" value="' . $email .'" />'; 
     echo $html;
      
 }
@@ -309,12 +319,20 @@ function zes_from_email_callback($args) {
  * to be displayed next to the checkbox.
  */
 function zes_from_name_callback($args) {
+	// First, we read the zes settings collection
+    $options = get_option( 'zes_plugin_settings' );
 
-	// Here, we will take the first argument of the array and add it to a label next to the checkbox
+    // Next, we need to make sure the element is defined in the options. If not, we'll set an empty string.
+    $name = '';
+    if( isset( $options['from_name'] ) ) {
+        $name = $options['from_name'];
+    } 
+
+	// Here, we will take the first argument of the array and add it to a label
     $html = '<label for="from_name"> '  . $args[0] . '</label><br>'; 
      
     // Note the ID and the name attribute of the element match that of the ID in the call to add_settings_field
-    $html .= '<input type="text" id="from_name" name="from_name" />'; 
+    $html .= '<input type="text" id="from_name" name="zes_plugin_settings[from_name]" value="' . $name .'" />'; 
     echo $html;
      
 }
