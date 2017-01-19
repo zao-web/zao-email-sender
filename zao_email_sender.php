@@ -273,7 +273,7 @@ function zes_initialize_plugin_settings() {
 	);
 	add_settings_field( 
 	    'from_name',                      // ID used to identify the field throughout the theme
-	    'From  Name',                           // The label to the left of the option interface element
+	    'From Name',                           // The label to the left of the option interface element
 	    'zes_from_name_callback',   // The name of the function responsible for rendering the option interface
 	    'zes_plugin_settings',                          // The page on which this option will be displayed
 	    'settings_section',         // The name of the section to which this field belongs
@@ -302,10 +302,10 @@ function zes_settings_callback() {
 }
 
 /**
- * This function renders the interface elements for toggling the visibility of the header element.
+ * This function renders the interface elements for changing the from email.
  * 
  * It accepts an array of arguments and expects the first element in the array to be the description
- * to be displayed next to the checkbox.
+ * to be displayed next to the label.
  */
 function zes_from_email_callback($args) {
 	// First, we read the zes settings collection
@@ -327,10 +327,10 @@ function zes_from_email_callback($args) {
 }
 
 /**
- * This function renders the interface elements for toggling the visibility of the header element.
+ * This function renders the interface elements for changing the from name.
  * 
  * It accepts an array of arguments and expects the first element in the array to be the description
- * to be displayed next to the checkbox.
+ * to be displayed next to the label.
  */
 function zes_from_name_callback($args) {
 	// First, we read the zes settings collection
