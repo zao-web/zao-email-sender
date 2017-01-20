@@ -101,7 +101,7 @@ function zao_send_email( $template, $receiver, $subject ) {
 
 	$mail = wp_mail( $receiver, $subject, $text );
 	
-	wp_redirect( admin_url( 'admin.php?page=zao_email_sender' ) );
+	wp_redirect( admin_url( 'admin.php?page=zao_email_sender&success=yes' ) );
 	exit;
 }
 
@@ -177,7 +177,10 @@ function zao_email_sender_render_page() {
 	<div class="wrap">
 		<h1>Zao Email Sender</h1>
 		<p>Easily send boilerplate HTML emails to clients.</p>
-		<?php settings_errors(); ?>
+		<?php settings_errors(); 
+		if( "yes" == $_GET['success'] ){
+		    echo "<div id='zes-success'>Your email was successfully sent!</div>";
+		}?>
 
 		<?php zes_tab_body_html(); ?>
 		
