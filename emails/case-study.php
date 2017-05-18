@@ -15,6 +15,6 @@
 		</div>	
 	</div>
 	<div class="footer" style="background: none;padding: 20px;font-size: 11px;">
-		<a href="http://zao.is" style="color: #4e8dca;text-decoration: none;">zao.is</a> | <a href="mailto:office@zao.is" style="color: #4e8dca;text-decoration: none;">office@zao.is</a>
+		<a href="http://zao.is" style="color: #4e8dca;text-decoration: none;">zao.is</a> | <a href="mailto:hello@zao.is" style="color: #4e8dca;text-decoration: none;">hello@zao.is</a>
 	</div>	
 </div>
